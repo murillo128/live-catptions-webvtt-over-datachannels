@@ -4,10 +4,8 @@ title: Live Captions: WebVTT over datachannels
 abbrev: webvtt-datachannels
 category: std
 ipr: trust200902
-area: ART
-workgroup: wish
 
-keyword: WebRTC
+keyword: WebRTC live captions datachannels webvtt
 
 stand_alone: yes
 pi: [toc, sortrefs, symrefs]
@@ -17,7 +15,7 @@ author:
     ins: S. Murillo
     name: Sergio Garcia Murillo
     organization: Millicast
-    email: sergio.garcia.murillo@cosmosoftware.i
+    email: sergio.garcia.murillo@cosmosoftware.io
 
 
 normative:
@@ -89,8 +87,41 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
               +--------------------------+--------------------+
               | Transmission order       | in-order           |
               +--------------------------+--------------------+
+              | PPIDs                    | WebRTC String      |
+              +--------------------------+--------------------+
               | Label                    | See Section 4.1    |
               +--------------------------+--------------------+
+
+#  WebVTT cues over datachannels
+
+This document allows sending a single WebVTT queue over a datachannal message using UTF-8 encoding.
+
+    00:00.000 --> 01:24.000
+    Introduction
+
+When using WebVTT from a file during the playback, the timestamps of the WebVTT queues are relative to the start of the playback media. However, when doing real time captioning, the playback time may not be the known when generating the captions and will be different if multiple people are watching the same live stream simultaneously.
+
+In order to allow to reuse the same WebVTT cues for multiple players witout requiring rewriting on the server side, the format for the WebVTT cues is modified to use absolute timestamps in EPOCH time instead of relative ones.
+
+    1649774427571 --> 1649774428771
+    Introduction
+    
+How to synchronize the sender timestamps with the receiver timestamp if the media and captions traverses multiple hops is outside of the scope of this document.
+
+It is possible to incrementally transmit captions before they are finished by sending multiple datachannel messages with WebVTT cueues with the same initial timestamp
+
+
+    1649774427571 --> 1649774428771
+    This is ...
+    
+    1649774427571 --> 1649774429771
+    This is an incremental ...
+    
+    1649774427571 --> 1649774430771
+    This is an incremental caption
+    
+The receiver will override the content of the previous received webvtt cue and store the last received one
+   
 
 #  SDP Considerations
 
